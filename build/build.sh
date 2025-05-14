@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # --- Configuration ---
-DOCKERFILE_PATH="./dockerfile" 
-DOCKERHUB_USERNAME="vaheeth"   
+DOCKERFILE_PATH="./dockerfile"
+DOCKERHUB_USERNAME="vaheeth"
 REPO_NAME="test"
 IMAGE_NAME="react-app"
-COMMIT_ID=$(git rev-parse --short HEAD) 
-LOCAL_TAG="${IMAGE_NAME}:${COMMIT_ID}" 
-DOCKERHUB_TAG="${DOCKERHUB_USERNAME}/${REPO_NAME}:${LOCAL_TAG}"
+COMMIT_ID=$(git rev-parse --short HEAD)
+LOCAL_TAG="${IMAGE_NAME}:${COMMIT_ID}"
+DOCKERHUB_TAG="${DOCKERHUB_USERNAME}/${REPO_NAME}:${IMAGE_NAME}-${COMMIT_ID}"
 
 echo "--- Building Docker Image ---"
 echo "Local Image Name: $LOCAL_TAG"
