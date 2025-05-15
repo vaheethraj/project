@@ -11,6 +11,7 @@ pipeline {
         
         stage('Build') {
             steps {
+              copyArtifacts filter: 'build.sh', fingerprintArtifacts: true, projectName: 'project/dev', selector: lastSuccessful()
               sh 'build.sh'
             }
         }
