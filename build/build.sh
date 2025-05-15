@@ -15,7 +15,7 @@ echo "Docker Hub Image Name: $DOCKERHUB_TAG"
 echo "Dockerfile Path: $DOCKERFILE_PATH"
 
 # --- Build the Docker image ---
-docker build -f "$DOCKERFILE_PATH" -t "$LOCAL_TAG" .
+sudo docker build -f "$DOCKERFILE_PATH" -t "$LOCAL_TAG" .
 if [ $? -ne 0 ]; then
   echo "Error building Docker image."
   exit 1
@@ -24,7 +24,7 @@ echo "Docker image built successfully."
 
 # --- Tag the image for Docker Hub ---
 echo "--- Tagging image for Docker Hub ---"
-docker tag "$LOCAL_TAG" "$DOCKERHUB_TAG"
+sudo docker tag "$LOCAL_TAG" "$DOCKERHUB_TAG"
 if [ $? -ne 0 ]; then
   echo "Error tagging image for Docker Hub."
   exit 1
