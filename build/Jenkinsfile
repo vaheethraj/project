@@ -1,18 +1,32 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_USER = 'vaheeth'
+        IMAGE_NAME = 'dev'
+    }
+
     stages {
-        
-        stage('Verify if file exists') {
+        stage('Checkout') {
             steps {
-                fileExists '/build/build.sh'
+                git branch: 'dev', url: ''
             }
         }
-        
-        stage('Build') {
+
+        stage('Build Docker Image') {
             steps {
-              sh 'chmod +x build/build.sh'
-              sh 'docker build -t react-app -f build/dockerfile .'
+                sh "docker build -t $DOCKER_HUB_USER/$IMAGE_NAME:COMMIT_ID ."
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'DockerhubCreds', variable: 'DOCKER_HUB_PASS')]) {
+                    sh """
+                        echo $DOCKER_HUB_PASS | docker login -u $DOCKER_HUB_USER --password-stdin
+                        docker push $DOCKER_HUB_USER/$IMAGE_NAME:COMMIT_ID
+                    """
+                }
             }
         }
     }
