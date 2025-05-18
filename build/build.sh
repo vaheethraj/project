@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Configuration ---
-DOCKERFILE_PATH="./dockerfile"
+DOCKERFILE_PATH="build/dockerfile"
 DOCKERHUB_USERNAME="vaheeth"
 REPO_NAME="test"
 IMAGE_NAME="react-app"

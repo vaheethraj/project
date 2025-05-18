@@ -2,9 +2,17 @@ pipeline {
     agent any
 
     stages {
+        
+        stage('Verify if file exists') {
+            steps {
+                fileExists '/build/build.sh'
+            }
+        }
+        
         stage('Build') {
             steps {
-              sh 'build.sh'
+              sh 'chmod +x build/build.sh'
+              sh 'docker build -t react-app -f build/dockerfile .'
             }
         }
     }
