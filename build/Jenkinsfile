@@ -10,14 +10,26 @@ pipeline {
     stages {
         stage('Checkout') {
             when {
-                branch 'main'
+                branch 'dev'
             }
             steps {
                 git branch: 'dev', url: 'https://github.com/vaheethraj/project.git'
             }
         }
 
+        stage('Checkout') {
+            when {
+                branch 'main'
+            }
+            steps {
+                git branch: 'main', url: 'https://github.com/vaheethraj/project.git'
+            }
+        }
+
         stage('Get Previous Commit_ID') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     def previousCommitId = sh(script: 'git rev-parse HEAD^', returnStdout: true).trim()
@@ -29,15 +41,18 @@ pipeline {
 
         stage('Login to dockerhub to push docker images to dockerhub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'DockerhubCreds', passwordVariable: 'DOCKER_HUB_PASS', usernameVariable: 'DOCKER_HUB_UNAME')]) {
-                    sh """
-                        echo '$DOCKER_HUB_PASS' | docker login -u '$DOCKER_HUB_UNAME' --password-stdin
-                    """
-                }
+            withCredentials([usernamePassword(credentialsId: 'DockerhubCreds', passwordVariable: 'DOCKER_HUB_PASS', usernameVariable: 'DOCKER_HUB_UNAME')]) {
+            sh """
+                echo $DOCKER_HUB_PASS | docker login -u $DOCKER_HUB_UNAME --password-stdin
+            """
+              }
             }
         }
 
         stage('Execute build.sh script which builds and pushes image to dev branch') {
+            when {
+                branch 'dev'
+            }
             steps {
                 sh "chmod +x build/build.sh"
                 sh "sh build/build.sh"
@@ -49,15 +64,15 @@ pipeline {
             when {
                 branch 'main'
             }
-            steps {
-                    sh """
-                        docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID}
-                        docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID} ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
-                        docker push ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
-                        docker rmi ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID} ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
-                    """
-            }
-        }
+            steps {  
+             sh """
+                docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID}
+                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID} ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                docker push ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                """
+    }
+}
 
     }
+
 }
