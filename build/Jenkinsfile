@@ -32,9 +32,9 @@ pipeline {
             }
             steps {
                 script {
-                    def previousCommitId = sh(script: 'git rev-parse HEAD^', returnStdout: true).trim()
+                    def previousCommitId = sh(script: 'git rev-parse --short HEAD^', returnStdout: true).trim()
                     env.PREVIOUS_COMMIT_ID = previousCommitId
-                    echo "Previous Commit ID: ${env.PREVIOUS_COMMIT_ID}"
+                    echo "Short Previous Commit ID: ${env.PREVIOUS_COMMIT_ID}"
                 }
             }
         }
