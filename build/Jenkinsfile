@@ -9,25 +9,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'dev', url: 'https://github.com/vaheethraj/project.git'
+                git branch: 'dev', url: 'https://github.com/zaarthulvignesh3003/guvi_project_01.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Execute build.sh script which builds and pushes image to dev branch') {
             steps {
-                sh "docker build -t $DOCKER_HUB_USER/$IMAGE_NAME:COMMIT_ID -f build/dockerfile ."
+                sh "chmod +x build/build.sh"
+                sh "sh build/build.sh"
+                sh "echo 'COMMIT_ID'"
+                sh "docker images"
             }
         }
 
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'DockerhubCreds', variable: 'DOCKER_HUB_PASS')]) {
-                    sh """
-                        echo $DOCKER_HUB_PASS | docker login -u $DOCKER_HUB_USER --password-stdin
-                        docker push $DOCKER_HUB_USER/$IMAGE_NAME:COMMIT_ID
-                    """
-                }
-            }
-        }
     }
 }
