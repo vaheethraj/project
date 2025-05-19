@@ -4,6 +4,7 @@
 DOCKER_USERNAME="vaheeth"
 REPO_NAME="dev"
 IMAGE_NAME="${DOCKER_USERNAME}/${REPO_NAME}"
+COMMIT_ID=$(git rev-parse --short HEAD)
 
 # Step 1: Build the image
 echo "Building Docker image..."
