@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'dev', url: 'https://github.com/zaarthulvignesh3003/guvi_project_01.git'
+                git branch: 'dev', url: ''
             }
         }
 
