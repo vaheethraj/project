@@ -4,12 +4,26 @@ pipeline {
     environment {
         DOCKER_HUB_USER = 'vaheeth'
         IMAGE_NAME = 'dev'
+        PROD_IMAGE_NAME = "vaheeth/prod"
     }
 
     stages {
         stage('Checkout') {
+            when {
+                branch 'main'
+            }
             steps {
                 git branch: 'dev', url: 'https://github.com/vaheethraj/project.git'
+            }
+        }
+
+        stage('Get Previous Commit_ID') {
+            steps {
+                script {
+                    def previousCommitId = sh(script: 'git rev-parse HEAD^', returnStdout: true).trim()
+                    env.PREVIOUS_COMMIT_ID = previousCommitId
+                    echo "Previous Commit ID: ${env.PREVIOUS_COMMIT_ID}"
+                }
             }
         }
 
@@ -31,5 +45,16 @@ pipeline {
             }
         }
 
+        stage('Push Docker Image to Prod Repo in Docker Hub only when dev pushed to main') {
+            when {
+                branch 'main'
+            }
+            steps {  
+             sh """
+                docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID}
+                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID} ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                docker push ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                """
+        }
     }
 }
