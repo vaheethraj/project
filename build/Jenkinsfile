@@ -26,19 +26,6 @@ pipeline {
             }
         }
 
-        stage('Get Previous Commit_ID') {
-            when {
-                branch 'main'
-            }
-            steps {
-                script {
-                    def previousCommitId = sh(script: 'git rev-parse --short HEAD^', returnStdout: true).trim()
-                    env.PREVIOUS_COMMIT_ID = previousCommitId
-                    echo "Short Previous Commit ID: ${env.PREVIOUS_COMMIT_ID}"
-                }
-            }
-        }
-
         stage('Login to dockerhub to push docker images to dockerhub') {
             steps {
             withCredentials([usernamePassword(credentialsId: 'DockerhubCreds', passwordVariable: 'DOCKER_HUB_PASS', usernameVariable: 'DOCKER_HUB_UNAME')]) {
@@ -66,9 +53,10 @@ pipeline {
             }
             steps {  
              sh """
-                docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID}
-                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${env.PREVIOUS_COMMIT_ID} ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
+                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
                 docker push ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                docker rmi ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
                 """
     }
 }
