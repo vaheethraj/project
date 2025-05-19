@@ -27,7 +27,6 @@ pipeline {
             steps {
                 sh "chmod +x build/build.sh"
                 sh "sh build/build.sh"
-                sh "echo '$COMMIT_ID'"
                 sh "docker images"
             }
         }
