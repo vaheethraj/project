@@ -9,14 +9,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'dev', url: 'https://github.com/zaarthulvignesh3003/guvi_project_01.git'
+                git branch: 'dev', url: 'https://github.com/vaheethraj/project.git'
             }
         }
 
         stage('Execute build.sh script which builds and pushes image to dev branch') {
             steps {
-                sh "chmod +x build/build.sh"
-                sh "sh build/build.sh"
+                sh "chmod +x build.sh"
+                sh "sh build.sh"
                 sh "echo 'COMMIT_ID'"
                 sh "docker images"
             }
