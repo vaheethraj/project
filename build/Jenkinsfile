@@ -5,6 +5,7 @@ pipeline {
         DOCKER_HUB_USER = 'vaheeth'
         IMAGE_NAME = 'dev'
         PROD_IMAGE_NAME = "vaheeth/prod"
+        COMMIT_ID=$(git rev-parse --short HEAD)
     }
 
     stages {
@@ -54,9 +55,9 @@ pipeline {
             steps {  
              sh """
                 docker pull ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest
-                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
-                docker push ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
-                docker rmi ${PROD_IMAGE_NAME}:${env.GIT_COMMIT}
+                docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ${PROD_IMAGE_NAME}:${COMMIT_ID}
+                docker push ${PROD_IMAGE_NAME}:${COMMIT_ID}
+                docker rmi ${PROD_IMAGE_NAME}:${COMMIT_ID}
                 """
     }
 }
